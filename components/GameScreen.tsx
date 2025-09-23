@@ -6,13 +6,21 @@ import TimerBar from './TimerBar';
 import ImageFrame from './ImageFrame';
 import PromptInput from './PromptInput';
 import ScorePopup from './ScorePopup';
+import InstructionsPopup from './InstructionsPopup';
 
 interface GameScreenProps {
   teamId: string;
   timerDuration: number;
+  showInstructions: boolean;
+  onStartGame: () => void;
 }
 
-const GameScreen: React.FC<GameScreenProps> = ({ teamId, timerDuration }) => {
+const GameScreen: React.FC<GameScreenProps> = ({ 
+  teamId, 
+  timerDuration, 
+  showInstructions: showInstructionsProp, 
+  onStartGame 
+}) => {
   const [gameState, setGameState] = useState<GameState>(GameState.IDLE);
   const [currentPrompt, setCurrentPrompt] = useState('');
   const [promptsUsed, setPromptsUsed] = useState<string[]>([]);
@@ -21,6 +29,14 @@ const GameScreen: React.FC<GameScreenProps> = ({ teamId, timerDuration }) => {
   const [roundStats, setRoundStats] = useState<RoundStats | null>(null);
   const [timerKey, setTimerKey] = useState(0);
   const [timeLeft, setTimeLeft] = useState(timerDuration);
+  const [localShowInstructions, setLocalShowInstructions] = useState(false);
+
+  // Sync with parent component's showInstructions prop
+  useEffect(() => {
+    if (showInstructionsProp) {
+      setLocalShowInstructions(true);
+    }
+  }, [showInstructionsProp]);
 
   const isTimerPaused = gameState === GameState.GENERATING || gameState === GameState.FINISHED || gameState === GameState.IDLE;
 
@@ -85,7 +101,9 @@ const GameScreen: React.FC<GameScreenProps> = ({ teamId, timerDuration }) => {
     setTimeLeft(timerDuration);
   };
 
-  const startGame = () => {
+  const handleStartAfterInstructions = () => {
+    setLocalShowInstructions(false);
+    onStartGame();
     handleNextRound();
     setGameState(GameState.PLAYING);
   };
@@ -105,6 +123,7 @@ const GameScreen: React.FC<GameScreenProps> = ({ teamId, timerDuration }) => {
 
   return (
     <div className="flex flex-col h-screen w-screen bg-stone-800 font-serif overflow-hidden">
+      {localShowInstructions && <InstructionsPopup onClose={handleStartAfterInstructions} />}
       <Header />
       <TimerBar
         key={timerKey}
@@ -113,35 +132,49 @@ const GameScreen: React.FC<GameScreenProps> = ({ teamId, timerDuration }) => {
         onTimeUp={handleTimeUp}
         onTick={setTimeLeft}
       />
-      <main className="flex-grow flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-8 p-4 overflow-hidden">
-        <ImageFrame 
-          imageUrl={imageUrl} 
-          isLoading={gameState === GameState.GENERATING} 
-          error={imageError}
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-        />
-        {gameState === GameState.IDLE ? (
-          <div className="flex flex-col items-center justify-center p-8 bg-amber-100/10 rounded-lg border-2 border-dashed border-amber-400/50 w-full max-w-md h-full max-h-[50vh] md:max-h-full md:h-auto">
-             <h2 className="text-2xl text-amber-200 mb-4">Ready, {teamId}?</h2>
+      <div className="flex-grow flex flex-col">
+        <main className="flex-grow flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-8 p-4 overflow-hidden">
+          <ImageFrame 
+            imageUrl={imageUrl} 
+            isLoading={gameState === GameState.GENERATING} 
+            error={imageError}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+          />
+          {gameState === GameState.IDLE ? (
+            <div className="flex flex-col items-center justify-center p-8 bg-amber-100/10 rounded-lg border-2 border-dashed border-amber-400/50 w-full max-w-md h-full max-h-[50vh] md:max-h-full md:h-auto">
+              <h2 className="text-2xl text-amber-200 mb-4">Ready, {teamId}?</h2>
+              <button 
+                onClick={handleStartAfterInstructions}
+                className="px-8 py-4 bg-amber-500 text-stone-900 font-bold text-xl rounded-md hover:bg-amber-400 transition-all duration-300 transform hover:scale-105 shadow-lg"
+              >
+                Start Round
+              </button>
+            </div>
+          ) : (
+            <PromptInput
+              prompt={currentPrompt}
+              setPrompt={setCurrentPrompt}
+              onNextClue={handleNextClue}
+              isGenerating={gameState === GameState.GENERATING}
+              isFinished={gameState === GameState.FINISHED}
+            />
+          )}
+        </main>
+        
+        {/* Correct Guess Button - Moved here from PromptInput */}
+        {gameState !== GameState.IDLE && gameState !== GameState.FINISHED && (
+          <div className="w-full flex justify-center p-4">
             <button 
-              onClick={startGame}
-              className="px-8 py-4 bg-amber-500 text-stone-900 font-bold text-xl rounded-md hover:bg-amber-400 transition-all duration-300 transform hover:scale-105 shadow-lg"
+              onClick={handleCorrectGuess}
+              className="px-6 py-3 bg-amber-500 text-stone-900 font-bold text-lg rounded-md hover:bg-amber-400 transition-colors disabled:bg-amber-300/50 disabled:cursor-not-allowed"
             >
-              Start Round
+              ✅ Correct Guess
             </button>
           </div>
-        ) : (
-          <PromptInput
-            prompt={currentPrompt}
-            setPrompt={setCurrentPrompt}
-            onNextClue={handleNextClue}
-            onCorrectGuess={handleCorrectGuess}
-            isGenerating={gameState === GameState.GENERATING}
-            isFinished={gameState === GameState.FINISHED}
-          />
         )}
-      </main>
+      </div>
+      
       {roundStats && <ScorePopup stats={roundStats} onNextRound={handleNextRound} />}
       <Footer />
     </div>

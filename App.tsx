@@ -8,12 +8,18 @@ import AdminScreen from './components/AdminScreen';
 
 const App: React.FC = () => {
   const [teamId, setTeamId] = useState<string | null>(null);
+  const [showInstructions, setShowInstructions] = useState(false);
   const [timerDuration, setTimerDuration] = useLocalStorage<number>('parayathe-parayam-timer', 120);
 
   const handleTeamIdSubmit = (id: string) => {
     if (id.trim()) {
       setTeamId(id.trim());
+      setShowInstructions(true);
     }
+  };
+
+  const handleStartGame = () => {
+    setShowInstructions(false);
   };
 
   return (
@@ -24,7 +30,12 @@ const App: React.FC = () => {
             path="/"
             element={
               teamId ? (
-                <GameScreen teamId={teamId} timerDuration={timerDuration} />
+                <GameScreen 
+                  teamId={teamId} 
+                  timerDuration={timerDuration} 
+                  showInstructions={showInstructions}
+                  onStartGame={handleStartGame}
+                />
               ) : (
                 <TeamEntryScreen onTeamIdSubmit={handleTeamIdSubmit} />
               )

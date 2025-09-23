@@ -5,12 +5,11 @@ interface PromptInputProps {
   prompt: string;
   setPrompt: (p: string) => void;
   onNextClue: () => void;
-  onCorrectGuess: () => void;
   isGenerating: boolean;
   isFinished: boolean;
 }
 
-const PromptInput: React.FC<PromptInputProps> = ({ prompt, setPrompt, onNextClue, onCorrectGuess, isGenerating, isFinished }) => {
+const PromptInput: React.FC<PromptInputProps> = ({ prompt, setPrompt, onNextClue, isGenerating, isFinished }) => {
   const isDisabled = isGenerating || isFinished;
 
   return (
@@ -31,20 +30,13 @@ const PromptInput: React.FC<PromptInputProps> = ({ prompt, setPrompt, onNextClue
           className="w-full flex-grow p-3 bg-transparent text-stone-800 border-2 border-stone-400/50 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-600 resize-none text-lg"
         />
       </div>
-      <div className="mt-4 flex flex-col sm:flex-row gap-4">
+      <div className="mt-4">
         <button
           onClick={onNextClue}
           disabled={isDisabled || !prompt.trim()}
-          className="flex-1 px-4 py-3 bg-stone-700 text-amber-50 font-bold text-lg rounded-md hover:bg-stone-600 transition-colors disabled:bg-stone-400 disabled:cursor-not-allowed"
+          className="w-full px-4 py-3 bg-stone-700 text-amber-50 font-bold text-lg rounded-md hover:bg-stone-600 transition-colors disabled:bg-stone-400 disabled:cursor-not-allowed"
         >
           {isGenerating ? 'Generating...' : 'Next Clue'}
-        </button>
-        <button
-          onClick={onCorrectGuess}
-          disabled={isDisabled}
-          className="flex-1 px-4 py-3 bg-amber-500 text-stone-900 font-bold text-lg rounded-md hover:bg-amber-400 transition-colors disabled:bg-amber-300/50 disabled:cursor-not-allowed"
-        >
-          ✅ Correct Guess
         </button>
       </div>
     </div>
