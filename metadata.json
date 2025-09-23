@@ -1,0 +1,5 @@
+{
+  "name": "Parayathe Parayam",
+  "description": "A vintage-themed, two-player guessing game where one player enters prompts to generate AI images, and the other player guesses the original prompt. Scores are calculated based on time remaining and clues used.",
+  "requestFramePermissions": []
+}
