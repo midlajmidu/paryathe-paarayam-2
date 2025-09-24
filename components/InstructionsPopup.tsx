@@ -13,7 +13,7 @@ const InstructionsPopup: React.FC<InstructionsPopupProps> = ({ onClose }) => {
         <div className="space-y-4">
           <div className="bg-blue-50 p-4 rounded-lg">
             <h3 className="font-bold text-lg mb-2">Objective</h3>
-            <p>Compete in 2 vs 2 battles – one prompts, one guesses. The faster you guess, the higher your score!</p>
+            <p>Compete in 2 vs 2 battles – Unlimited prompts,  unlimited guesses. The faster you guess, the higher your score!</p>
           </div>
           
           <div className="bg-yellow-50 p-4 rounded-lg">
