@@ -9,7 +9,7 @@ import AdminScreen from './components/AdminScreen';
 const App: React.FC = () => {
   const [teamId, setTeamId] = useState<string | null>(null);
   const [showInstructions, setShowInstructions] = useState(false);
-  const [timerDuration, setTimerDuration] = useLocalStorage<number>('parayathe-parayam-timer', 150);
+  const [timerDuration, setTimerDuration] = useLocalStorage<number>('parayathe-parayam-timer', 130);
 
   const handleTeamIdSubmit = (id: string) => {
     if (id.trim()) {
