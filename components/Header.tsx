@@ -7,8 +7,8 @@ interface LogoProps {
 
 const Logo: React.FC<LogoProps> = ({ variant = 'left' }) => {
     const imageSrc = variant === 'left' 
-        ? "/mla.jpeg" 
-        : "/padakkalam.jpeg";
+        ? "https://github.com/midlajmidu/images/blob/main/mla.jpeg?raw=true" 
+        : "https://github.com/midlajmidu/images/blob/main/padakkalam.jpeg?raw=true";
         
     return (
         <div className="w-10 h-10 sm:w-14 sm:h-14 bg-amber-400 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
